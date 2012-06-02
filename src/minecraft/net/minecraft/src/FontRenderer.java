@@ -5,7 +5,6 @@ import com.pclewis.mcpatcher.mod.FontUtils;
 import com.pclewis.mcpatcher.mod.TextureUtils;
 //begin spout - BetterFonts
 import net.minecraft.src.betterfonts.StringCache;
-
 import org.spoutcraft.client.config.ConfigReader;
 //end spout - BetterFonts
 import java.awt.image.BufferedImage;
@@ -20,9 +19,11 @@ import org.lwjgl.opengl.GL11;
 
 //Spout rewritten - not even going to try to figure out where the changes are...
 public class FontRenderer {
-	public StringCache stringCache;	//spout - BetterFonts
-	//end spout AlphaText
-
+	//begin Spout - BetterFonts
+	public boolean enableBetterFonts = ConfigReader.betterFontsEnabled;
+	public boolean enableDropShadow = ConfigReader.fontDropShadowEnabled;
+	public StringCache stringCache;
+	//end Spout - BetterFonts
 	private static final Pattern field_52015_r = Pattern.compile("(?i)\\u00A7[0-9A-FK-OR]");
 	private int[] charWidth = new int[256];
 	public int fontTextureName = 0;
@@ -101,8 +102,9 @@ public class FontRenderer {
 		}
 //begin Spout - BetterFonts
 		/* Only use OpenType rendering for the primary FontRenderer and not for the enchantment table Standard Galactic renderer */
-		if(par2Str.equals("/font/default.png"))
-		{
+		enableBetterFonts = ConfigReader.betterFontsEnabled;
+		enableDropShadow = ConfigReader.fontDropShadowEnabled;
+		if(par2Str.equals("/font/default.png")) {
 			this.stringCache = new StringCache(colorCode);
 			this.stringCache.setDefaultFont(ConfigReader.fontName, ConfigReader.fontSize, ConfigReader.fontAntiAlias);
 			System.out.println("BetterFonts configuration loaded");
@@ -209,7 +211,7 @@ public class FontRenderer {
 		}
 //begin - BetterFonts
 		int var5 = 0;
-		if(ConfigReader.fontDropShadowEnabled) {
+		if(enableDropShadow) {
 			var5 = func_50101_a(par1Str, par2 + 1, par3 + 1, par4, true);
 		}
 //end Spout - BetterFonts
@@ -227,7 +229,7 @@ public class FontRenderer {
 
 	private String bidiReorder(String par1Str) {
 //begin Spout - BetterFonts
-		if (ConfigReader.betterFontsEnabled && this.stringCache != null) {
+		if (enableBetterFonts && this.stringCache != null) {
 			return par1Str;
 		}
 //end Spout - BetterFonts
@@ -405,7 +407,7 @@ public class FontRenderer {
 			this.posX = (float)par2;
 			this.posY = (float)par3;
 //begin Spout - BetterFonts
-			if (ConfigReader.betterFontsEnabled && this.stringCache != null) {
+			if (enableBetterFonts && this.stringCache != null) {
 				this.posX += this.stringCache.renderString(par1Str, par2, par3, par4, par5);
 			}
 			else {
@@ -422,7 +424,7 @@ public class FontRenderer {
 	final Pattern STRIP_COLOR_PATTERN = Pattern.compile("(?i)\u00A7[0-F]");
 	public int getStringWidth(String par1Str) {
 //begin Spout - BetterFonts
-		if (ConfigReader.betterFontsEnabled && this.stringCache != null) {
+		if (enableBetterFonts && this.stringCache != null) {
 			return this.stringCache.getStringWidth(par1Str);
 		}
 //end Spout - BetterFonts
@@ -501,7 +503,7 @@ public class FontRenderer {
 	// begin Spout TextAlpha - TrimStringToWidth, returns a trimmed string to the specified length. Also handles RTL conversion.
 	public String func_50104_a(String par1Str, int width2, boolean RTL) {
 //begin Spout - BetterFonts
-		if (ConfigReader.betterFontsEnabled && this.stringCache != null) {
+		if (enableBetterFonts && this.stringCache != null) {
 			return this.stringCache.trimStringToWidth(par1Str, width2, RTL);
 		}
 //end Spout - BetterFonts
@@ -674,7 +676,7 @@ public class FontRenderer {
 	// Spout TextAlpha - describes how many characters of a given input string will fit within the specified screen width.
 	private int sizeStringToWidth(String par1Str, int width2) {
 //begin Spout - BetterFonts
-		if (ConfigReader.betterFontsEnabled && this.stringCache != null) {
+		if (enableBetterFonts && this.stringCache != null) {
 			return this.stringCache.sizeStringToWidth(par1Str, width2);
 		}
 //end Spout - BetterFonts
@@ -811,6 +813,8 @@ public class FontRenderer {
 			this.colorCode[var9] = (var11 & 255) << 16 | (var12 & 255) << 8 | var13 & 255;
 		}
 //begin Spout - BetterFonts
+		enableBetterFonts = ConfigReader.betterFontsEnabled;
+		enableDropShadow = ConfigReader.fontDropShadowEnabled;
 		/* Only use OpenType rendering for the primary FontRenderer and not for the enchantment table Standard Galactic renderer */
 		if(var2.equals("/font/default.png")) {
 			this.stringCache = new StringCache(colorCode);

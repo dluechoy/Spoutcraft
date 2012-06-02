@@ -16,6 +16,10 @@
  */
 package org.spoutcraft.client.gui.settings;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.src.FontRenderer;
+import org.spoutcraft.client.SpoutClient;
+
 import org.spoutcraft.client.config.ConfigReader;
 import org.spoutcraft.spoutcraftapi.event.screen.ButtonClickEvent;
 import org.spoutcraft.spoutcraftapi.gui.GenericCheckBox;
@@ -25,7 +29,6 @@ public class BetterFontsCheckBox extends GenericCheckBox{
 		super("Enable BetterFonts");
 		setChecked(ConfigReader.betterFontsEnabled);
 		setTooltip("The BetterFonts adds OpenType font support. This will use the fonts installed on your system for drawing text instead of the builtin bitmap fonts that come with Minecraft. All in-game text will change to use the new fonts including GUIs, the F3 debug screen, chat, and even signs. Languages such as Arabic and Hindi look much better with this mod since both require complex layout that the bitmap fonts simply can't provide.\nThis mod should have little or no impact on performance.");
-		//setChecked(ConfigReader.delayedTooltips);
 	}
 
 	public BetterFontsCheckBox(String title) {
@@ -41,10 +44,13 @@ public class BetterFontsCheckBox extends GenericCheckBox{
 	}
 	@Override
 	public void onButtonClick(ButtonClickEvent event) {
-	/*	ConfigReader.anaglyph3D = !ConfigReader.anaglyph3D;
-		Minecraft.theMinecraft.gameSettings.anaglyph = ConfigReader.anaglyph3D;
-		Minecraft.theMinecraft.renderEngine.refreshTextures();*/
 		ConfigReader.betterFontsEnabled = this.isChecked();
 		ConfigReader.write();
+
+		Minecraft game = SpoutClient.getHandle();
+		//game.fontRenderer.initialize(game.gameSettings, "/font/default.png", game.renderEngine);
+		game.fontRenderer.enableBetterFonts = ConfigReader.betterFontsEnabled; // this way the glyphcache is not flushed.
+
+
 	}
 }

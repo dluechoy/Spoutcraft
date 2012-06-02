@@ -16,7 +16,9 @@
  */
 package org.spoutcraft.client.gui.settings;
 
-import com.pclewis.mcpatcher.mod.TextureUtils;
+import net.minecraft.client.Minecraft;
+import net.minecraft.src.FontRenderer;
+import org.spoutcraft.client.SpoutClient;
 
 import org.spoutcraft.client.config.ConfigReader;
 import org.spoutcraft.spoutcraftapi.event.screen.ButtonClickEvent;
@@ -44,6 +46,7 @@ public class FontDropShadowCheckBox extends GenericCheckBox{
 	public void onButtonClick(ButtonClickEvent event) {
 		ConfigReader.fontDropShadowEnabled = this.isChecked();
 		ConfigReader.write();
-		TextureUtils.setFontRenderer();
+		Minecraft game = SpoutClient.getHandle();
+		game.fontRenderer.enableBetterFonts = ConfigReader.betterFontsEnabled; // this way the glyphcache is not flushed.
 	}
 }

@@ -41,17 +41,16 @@ public class FontNameCombo extends GenericComboBox {
 //			System.out.println("BetterFonts " + aFont.getName());
 		}
 		setItems(items);
-		setSelection(items.indexOf(ConfigReader.fontName));  //since there is no arbitary user input get from name is unnecessary.
-		System.out.println("BetterFonts " + ConfigReader.fontName);
+		setSelection(items.indexOf(ConfigReader.fontName));  //since there is no arbitary user input getFontFromName is unnecessary.
+		System.out.println("BetterFonts FontNameCombo : " + ConfigReader.fontName);
 		this.gui = gui;
 	}
 
+	//Store the string as fontname and trigger custom texture change widget.
 	@Override
 	public void onSelectionChanged(int i, String text) {
-		//Store the string as fontname and trigger custom texture change widget.
 		ConfigReader.fontName=text;
 		ConfigReader.write();
-
 		TextureUtils.setFontRenderer();
 	}
 }
