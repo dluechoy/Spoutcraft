@@ -3,6 +3,11 @@ package net.minecraft.src;
 import com.pclewis.mcpatcher.mod.Colorizer;
 import com.pclewis.mcpatcher.mod.FontUtils;
 import com.pclewis.mcpatcher.mod.TextureUtils;
+//begin spout - BetterFonts
+import net.minecraft.src.betterfonts.StringCache;
+
+import org.spoutcraft.client.config.ConfigReader;
+//end spout - BetterFonts
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -15,6 +20,9 @@ import org.lwjgl.opengl.GL11;
 
 //Spout rewritten - not even going to try to figure out where the changes are...
 public class FontRenderer {
+	public StringCache stringCache;	//spout - BetterFonts
+	//end spout AlphaText
+
 	private static final Pattern field_52015_r = Pattern.compile("(?i)\\u00A7[0-9A-FK-OR]");
 	private int[] charWidth = new int[256];
 	public int fontTextureName = 0;
@@ -91,6 +99,15 @@ public class FontRenderer {
 
 			this.colorCode[var9] = (var11 & 255) << 16 | (var12 & 255) << 8 | var13 & 255;
 		}
+//begin Spout - BetterFonts
+		/* Only use OpenType rendering for the primary FontRenderer and not for the enchantment table Standard Galactic renderer */
+		if(par2Str.equals("/font/default.png"))
+		{
+			this.stringCache = new StringCache(colorCode);
+			this.stringCache.setDefaultFont(ConfigReader.fontName, ConfigReader.fontSize, ConfigReader.fontAntiAlias);
+			System.out.println("BetterFonts configuration loaded");
+		}
+//end Spout - BetterFonts
 	}
 
 	// begin Spout AlphaText
@@ -136,6 +153,7 @@ public class FontRenderer {
 		tessellator.draw();
 		return this.charWidthf[k];
 	}
+	// end Spout AlphaText
 
 	private void loadGlyphTexture(int par1) {
 		String var3 = String.format("/font/glyph_%02X.png", new Object[]{Integer.valueOf(par1)});
@@ -189,8 +207,12 @@ public class FontRenderer {
 		if (this.bidiFlag) {
 			par1Str = this.bidiReorder(par1Str);
 		}
-
-		int var5 = this.func_50101_a(par1Str, par2 + 1, par3 + 1, par4, true);
+//begin - BetterFonts
+		int var5 = 0;
+		if(ConfigReader.fontDropShadowEnabled) {
+			var5 = func_50101_a(par1Str, par2 + 1, par3 + 1, par4, true);
+		}
+//end Spout - BetterFonts
 		var5 = Math.max(var5, this.func_50101_a(par1Str, par2, par3, par4, false));
 		return var5;
 	}
@@ -204,6 +226,11 @@ public class FontRenderer {
 	}
 
 	private String bidiReorder(String par1Str) {
+//begin Spout - BetterFonts
+		if (ConfigReader.betterFontsEnabled && this.stringCache != null) {
+			return par1Str;
+		}
+//end Spout - BetterFonts
 		if (par1Str != null && Bidi.requiresBidi(par1Str.toCharArray(), 0, par1Str.length())) {
 			Bidi var2 = new Bidi(par1Str, -2);
 			byte[] var3 = new byte[var2.getRunCount()];
@@ -377,7 +404,14 @@ public class FontRenderer {
 			//end Spout AlphaText
 			this.posX = (float)par2;
 			this.posY = (float)par3;
-			this.renderStringAtPos(par1Str, par5);
+//begin Spout - BetterFonts
+			if (ConfigReader.betterFontsEnabled && this.stringCache != null) {
+				this.posX += this.stringCache.renderString(par1Str, par2, par3, par4, par5);
+			}
+			else {
+				this.renderStringAtPos(par1Str, par5);
+			}
+//end Spout - BetterFonts
 			return (int)this.posX;
 		} else {
 			return 0;
@@ -387,6 +421,11 @@ public class FontRenderer {
 	// begin Spout TextAlpha
 	final Pattern STRIP_COLOR_PATTERN = Pattern.compile("(?i)\u00A7[0-F]");
 	public int getStringWidth(String par1Str) {
+//begin Spout - BetterFonts
+		if (ConfigReader.betterFontsEnabled && this.stringCache != null) {
+			return this.stringCache.getStringWidth(par1Str);
+		}
+//end Spout - BetterFonts
 		if (par1Str == null) {
 			return 0;
 		}
@@ -461,6 +500,11 @@ public class FontRenderer {
 
 	// begin Spout TextAlpha - TrimStringToWidth, returns a trimmed string to the specified length. Also handles RTL conversion.
 	public String func_50104_a(String par1Str, int width2, boolean RTL) {
+//begin Spout - BetterFonts
+		if (ConfigReader.betterFontsEnabled && this.stringCache != null) {
+			return this.stringCache.trimStringToWidth(par1Str, width2, RTL);
+		}
+//end Spout - BetterFonts
 		float widthWrp = (float)width2;
 		float widthStr = 0;
 		StringBuilder str0 = new StringBuilder();
@@ -629,6 +673,11 @@ public class FontRenderer {
 
 	// Spout TextAlpha - describes how many characters of a given input string will fit within the specified screen width.
 	private int sizeStringToWidth(String par1Str, int width2) {
+//begin Spout - BetterFonts
+		if (ConfigReader.betterFontsEnabled && this.stringCache != null) {
+			return this.stringCache.sizeStringToWidth(par1Str, width2);
+		}
+//end Spout - BetterFonts
 		float widthSz = (float)width2;
 		float widthCh = 0F;
 		int lenStr = par1Str.length();
@@ -761,6 +810,14 @@ public class FontRenderer {
 
 			this.colorCode[var9] = (var11 & 255) << 16 | (var12 & 255) << 8 | var13 & 255;
 		}
+//begin Spout - BetterFonts
+		/* Only use OpenType rendering for the primary FontRenderer and not for the enchantment table Standard Galactic renderer */
+		if(var2.equals("/font/default.png")) {
+			this.stringCache = new StringCache(colorCode);
+			this.stringCache.setDefaultFont(ConfigReader.fontName, ConfigReader.fontSize, ConfigReader.fontAntiAlias);
+			System.out.println("BetterFonts configuration loaded");
+		}
+//end Spout - BetterFonts
 	}
 
 	//begin Spout TextAlpha /** Meow, uses \n to split lines. */
@@ -778,7 +835,7 @@ public class FontRenderer {
 			if (c == '\247' && i + 1 < par1str.length()) {
 				i++;
 				c = par1str.charAt(i);
-				if (c>='0' && c<='9'){
+				if ((c>='0' && c<='F')||(c>='a' && c<='f')){ 
 					selectColor = c;
 					selectRandom.setLength(0);
 					bold = false;

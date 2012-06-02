@@ -28,10 +28,13 @@ import org.spoutcraft.spoutcraftapi.Spoutcraft;
 import org.spoutcraft.spoutcraftapi.addon.Addon;
 import org.spoutcraft.spoutcraftapi.gui.*;
 
+
 public class GameSettingsScreen extends GuiScreen{
 	private Button doneButton = null;
 	public final GuiScreen parent;
 	private GenericScrollArea scrollArea;
+
+	private GenericComboBox comboFont; //meow
 
 	public GameSettingsScreen(GuiScreen parent) {
 		this.parent = parent;
@@ -472,6 +475,62 @@ public class GameSettingsScreen extends GuiScreen{
 		control.setWidth(150).setHeight(15).setX(right).setY(top + 2);
 		screen.attachWidget(spoutcraft, control);
 		top += 22;
+
+		top += 5;
+		
+		label = new GenericLabel("Font Settings");
+		size = Spoutcraft.getMinecraftFont().getTextWidth(label.getText());
+		label.setX((int) (width / 2 - size / 2)).setY(top);
+		label.setTextColor(grey);
+		screen.attachWidget(spoutcraft, label);
+		top += 11;
+
+		linebreak = new GenericGradient();
+		linebreak.setBottomColor(grey);
+		linebreak.setTopColor(grey);
+		linebreak.setX(width/2 - 318 / 2).setY(top).setHeight(3).setWidth(318);
+		screen.attachWidget(spoutcraft, linebreak);
+		top += 6;
+
+		control = new BetterFontsCheckBox().setAlign(WidgetAnchor.TOP_CENTER);
+		control.setWidth(150).setHeight(20).setX(left).setY(top);
+		screen.attachWidget(spoutcraft, control);
+
+		/*int fontSelection = 0;
+		if(comboFont != null) {
+			fontSelection = comboFont.getSelectedRow();
+		}*/
+		comboFont = new FontNameCombo(this);
+		screen.attachWidget(spoutcraft, comboFont);
+		comboFont.setGeometry(right, top, 150, 20);
+		top += 22;
+
+		control = new FontSizeSlider().setAlign(WidgetAnchor.TOP_CENTER);
+		control.setWidth(150).setHeight(20).setX(left).setY(top);
+		screen.attachWidget(spoutcraft, control);
+		top += 22;
+
+		control = new FontAntiAliasCheckBox().setAlign(WidgetAnchor.TOP_CENTER);
+		control.setWidth(150).setHeight(20).setX(left).setY(top);
+		screen.attachWidget(spoutcraft, control);
+		top += 22;
+
+		control = new FontDropShadowCheckBox().setAlign(WidgetAnchor.TOP_CENTER);
+		control.setWidth(150).setHeight(20).setX(left).setY(top);
+		screen.attachWidget(spoutcraft, control);
+
+		control = new FontResetButton(this).setAlign(WidgetAnchor.TOP_CENTER);
+		control.setWidth(150).setHeight(20).setX(right).setY(top);
+		screen.attachWidget(spoutcraft, control);
+		top += 22;
+
+		linebreak = new GenericGradient();
+		linebreak.setBottomColor(grey);
+		linebreak.setTopColor(grey);
+		linebreak.setX(width/2 - 318 / 2).setY(top).setHeight(3).setWidth(318);
+		screen.attachWidget(spoutcraft, linebreak);
+		top += 6;
+
 	}
 
 	@Override

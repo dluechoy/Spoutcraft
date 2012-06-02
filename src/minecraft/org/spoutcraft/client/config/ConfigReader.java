@@ -85,6 +85,13 @@ public class ConfigReader {
 	public static int resizedScreenshotHeight = 3200;
 	public static float chatOpacity = 0.5f;
 	public static boolean animateMainMenu = true;
+
+	public static boolean betterFontsEnabled = false;
+	public static String fontName = "SansSerif";
+	public static int fontSize = 18;
+	public static boolean fontAntiAlias = false;
+	public static boolean fontDropShadowEnabled = true;
+
 	
 	//Launcher settings
 	public static boolean fastLogin = false;
